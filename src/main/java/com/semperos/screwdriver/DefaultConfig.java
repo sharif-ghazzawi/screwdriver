@@ -80,6 +80,7 @@ public class DefaultConfig {
     public static ArrayList<String> getTemplateExtensions() {
         ArrayList<String> exts = new ArrayList<>();
         exts.add("dust");
+        exts.add("jade");
         return exts;
     }
 

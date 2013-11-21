@@ -2,9 +2,11 @@ package com.semperos.screwdriver.build;
 
 import com.semperos.screwdriver.FileUtil;
 import com.semperos.screwdriver.js.DustCompiler;
+import com.semperos.screwdriver.js.JadeCompiler;
 import com.semperos.screwdriver.js.rhino.RhinoEvaluatorException;
 import com.semperos.screwdriver.pipeline.AssetSpec;
 import com.semperos.screwdriver.pipeline.PipelineEnvironment;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -18,17 +20,22 @@ public class BuildTemplate extends BuildAssetWithRhino {
     private static Logger logger = Logger.getLogger(BuildTemplate.class);
     private PipelineEnvironment pe;
     private DustCompiler dustCompiler;
+    private JadeCompiler jadeCompiler;
 
     public BuildTemplate(PipelineEnvironment pe, AssetSpec assetSpec) {
         super(assetSpec);
         this.pe = pe;
         dustCompiler = new DustCompiler();
+        jadeCompiler = new JadeCompiler();
     }
 
     private String compile(File sourceFile) throws IOException, RhinoEvaluatorException {
         String sourceFileName = sourceFile.toString();
         if (FilenameUtils.isExtension(sourceFileName, "dust")) {
             return this.dustCompiler.compile(sourceFile);
+        } else if (FilenameUtils.isExtension(sourceFileName, "jade")) {
+            jadeCompiler.setCompilerLocals(assetSpec.getAssetLocals());
+            return jadeCompiler.compile(sourceFile);
         } else {
             throw new RuntimeException("File of type " + sourceFileName + " is not supported by JavaScript compilation at this time.");
         }
